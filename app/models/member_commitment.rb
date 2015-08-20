@@ -41,13 +41,12 @@ class MemberCommitment < ParseResource::Base
     end
 
     #Gets recommend time slot based off of commitments tally.
-    def self.get_recommended_slot(email)
-        member = MemberCommitment.where(email: email).to_a[0]
+    def self.get_recommended_slot(member)
         tally = self.generate_commitments_tally
         least_tally = tally.keys.sort{|a, b| tally[a] <=> tally[b]}
         recommended_val = least_tally[0]
 
-        while members.commitments.include? recommended_val
+        while member.commitments.include? recommended_val
             least_tally = least_tally.shift
             recommended_val = least_tally[0]
         end
@@ -58,6 +57,6 @@ class MemberCommitment < ParseResource::Base
     def set_cannot_attend(email, slot)
          member = MemberCommitment.where(email: email).to_a[0]
          index = member.tabling_commitments.index(slot)
-         member.tabling_commitments[index] = get_recommended_slot(email)
+         member.tabling_commitments[index] = get_recommended_slot(member)
     end
 end
